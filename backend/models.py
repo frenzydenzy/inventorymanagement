@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Numeric, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -22,7 +24,7 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     product_name = Column(String(150), nullable=False)
-    price = Column(String(20), nullable=False)
+    price = Column(Numeric(10, 2), nullable=False)
     quantity = Column(Integer, nullable=False)
 
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
@@ -32,3 +34,52 @@ class Product(Base):
     description = Column(String(500), nullable=True)
     category = relationship("Category")
     supplier = relationship("Supplier")
+
+class InventoryTransaction(Base):
+    __tablename__ = "inventory_transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    product_id = Column(
+        Integer,
+        ForeignKey("products.id"),
+        nullable=False
+    )
+
+    transaction_type = Column(
+        String(20),
+        nullable=False
+    )
+
+    quantity = Column(
+        Integer,
+        nullable=False
+    )
+
+    previous_quantity = Column(
+        Integer,
+        nullable=False
+    )
+
+    new_quantity = Column(
+        Integer,
+        nullable=False
+    )
+
+    reference = Column(
+        String(150),
+        nullable=True
+    )
+
+    notes = Column(
+        String(500),
+        nullable=True
+    )
+
+    created_at = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.utcnow
+    )
+
+    product = relationship("Product")
