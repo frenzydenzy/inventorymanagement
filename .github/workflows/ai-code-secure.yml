@@ -44,9 +44,11 @@ jobs:
 
       - name: Run AI Code Secure Orchestrator (pre-merge)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
         run: |
+          git config user.name "AI Code Secure Bot"
+          git config user.email "ai-code-secure@users.noreply.github.com"
           mkdir -p "$ACS_ARTIFACTS_DIR"
           copilot \
             --prompt "Run the AI Code Secure pre-merge pipeline for this checked-out feature branch. Follow @.ai-code-secure/agents/orchestrator.agent.md and @.ai-code-secure/skills/orchestrator/SKILL.md. Use the GitHub provider configured in ai-code-secure.yaml, obey the base-branch and human-approval guards, and write the required reports under .ai-code-secure/artifacts/. Do not merge any pull request." \
@@ -89,9 +91,10 @@ jobs:
 
       - name: Run AI Code Secure Orchestrator (post-merge)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
         run: |
+          mkdir -p "$ACS_ARTIFACTS_DIR"
           copilot \
             --prompt "Run the AI Code Secure post-merge pipeline for this checked-out branch. Follow @.ai-code-secure/agents/orchestrator.agent.md and @.ai-code-secure/skills/orchestrator/SKILL.md. Use the GitHub provider configured in ai-code-secure.yaml and write the required impact report and history under the configured reporting paths." \
             --allow-all-tools \
