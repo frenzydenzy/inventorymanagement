@@ -1,0 +1,17 @@
+{
+  "remediation_branch": "ai-remediation/feature/post-merge-report-smoke-486aefa",
+  "feature_branch": "feature/post-merge-report-smoke",
+  "base_branch": "master",
+  "status": "AWAITING_APPROVAL",
+  "test_command": "python -m compileall -q backend",
+  "test_result": "PASSED",
+  "fixes": [
+    {
+      "rule_id": "CX-001",
+      "file_path": "tests/fixtures/ai_code_secure_post_merge_smoke.py",
+      "line_number": 3,
+      "before_snippet": "    return eval(untrusted_expression)",
+      "after_snippet": "    return ast.literal_eval(untrusted_expression)"
+    }
+  ]
+}
