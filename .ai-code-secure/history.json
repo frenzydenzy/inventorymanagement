@@ -1,0 +1,15 @@
+[
+  {
+    "timestamp": "2026-11-25T07:09:08.533514+00:00",
+    "commit_sha": "486aefaf3293a0ff54395dff951feb57f2ef0d18",
+    "feature_branch": "feature/post-merge-report-smoke",
+    "files_changed": 1,
+    "findings_detected": 1,
+    "fixes_applied": 1,
+    "severity_breakdown": {
+      "CRITICAL": 1
+    },
+    "tests_passed": true,
+    "feature_summary": "Adds an intentionally unsafe Python fixture that calls eval() on a string, used to exercise the post-merge report flow."
+  }
+]
