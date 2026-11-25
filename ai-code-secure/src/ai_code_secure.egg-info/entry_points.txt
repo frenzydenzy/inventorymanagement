@@ -1,0 +1,2 @@
+[console_scripts]
+ai-code-secure = ai_code_secure.cli:main

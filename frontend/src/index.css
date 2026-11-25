@@ -1,0 +1,249 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  color: #252525;
+  background: #f4f1eb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #252525;
+  --muted: #77736b;
+  --paper: #f4f1eb;
+  --panel: #fffdfa;
+  --line: #e4dfd6;
+  --accent: #d8664d;
+  --accent-soft: #f6ded6;
+  --navy: #202b2b;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 88% 0%, rgba(216, 102, 77, 0.08), transparent 28rem),
+    var(--paper);
+}
+
+.app-sidebar {
+  background: var(--navy);
+  color: #f7f3ed;
+}
+
+.brand-mark {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-symbol {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-link {
+  color: #aeb9b4;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+.sidebar-link.is-active {
+  background: #f3eee7;
+  color: var(--navy);
+}
+
+.sidebar-icon {
+  filter: grayscale(1);
+  opacity: 0.75;
+}
+
+.sidebar-link.is-active .sidebar-icon {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.app-topbar {
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 253, 250, 0.76);
+  backdrop-filter: blur(14px);
+}
+
+.eyebrow {
+  margin: 0 0 3px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  margin: 0;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  padding: 7px 11px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #58a078;
+  box-shadow: 0 0 0 3px #e3f0e8;
+}
+
+.page-main {
+  background: transparent;
+}
+
+.dashboard-intro {
+  margin-bottom: 2px;
+}
+
+.dashboard-heading {
+  margin: 0;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.dashboard-copy {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stat-card,
+.surface-panel,
+.page-main .bg-white {
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 250, 0.9);
+  box-shadow: 0 10px 30px rgba(56, 45, 35, 0.045);
+}
+
+.page-main input,
+.page-main select {
+  border-color: #dcd5ca;
+  background: #fffdfa;
+}
+
+.page-main input:focus,
+.page-main select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(216, 102, 77, 0.14);
+  outline: none;
+}
+
+.page-main table thead {
+  background: #f7f3ed;
+}
+
+.page-main table th {
+  color: #6d675f;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.page-main table tbody tr {
+  transition: background-color 150ms ease;
+}
+
+.page-main table tbody tr:hover {
+  background: #fcf5ef;
+}
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 58px;
+  height: 58px;
+  border-radius: 0 0 0 100%;
+  background: var(--accent-soft);
+  content: "";
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.stat-value {
+  margin-top: 10px;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.section-title {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 640px) {
+  .app-topbar {
+    padding-inline: 1rem;
+  }
+
+  .page-main {
+    padding: 1rem;
+  }
+
+  .status-chip {
+    display: none;
+  }
+}

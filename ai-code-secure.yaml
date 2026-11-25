@@ -1,0 +1,18 @@
+project:
+  name: inventory-management
+  base_branch: master
+  primary_language: python
+  test_command: python -m compileall -q backend
+vcs:
+  provider: github
+  host: https://github.com
+  remediation_branch_prefix: ai-remediation/
+  require_human_approval: true
+  auto_merge_on_approval: false
+security_rules:
+  severity_threshold: MEDIUM
+  ruleset: sonarqube-checkmarx-hybrid
+reporting:
+  artifacts_dir: .ai-code-secure/artifacts
+  impact_reports_dir: docs/impact-reports
+  history_log: .ai-code-secure/history.json

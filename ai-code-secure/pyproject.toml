@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-code-secure"
+version = "0.1.0"
+description = "Declarative multi-agent security remediation and documentation suite for GitLab"
+requires-python = ">=3.10"
+dependencies = [
+    "PyYAML>=6.0.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+ai-code-secure = "ai_code_secure.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ai_code_secure = [
+    "templates/**/*",
+    "templates/**/.gitlab-ci.ai-secure.yml",
+]

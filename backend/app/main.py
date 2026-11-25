@@ -1,7 +1,13 @@
 from fastapi import FastAPI, Depends, Query, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-
+from security import (
+    hash_password,
+    verify_password,
+    create_access_token
+)
+from datetime import timedelta  
 from database import SessionLocal
 from crud import (
     create_product,
@@ -40,6 +46,17 @@ from schemas import (
     InventoryTransactionResponse
 )
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_db():
