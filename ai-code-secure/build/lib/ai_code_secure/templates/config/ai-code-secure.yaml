@@ -1,0 +1,21 @@
+project:
+  name: "default-service"
+  base_branch: "main"
+  primary_language: "nodejs" # nodejs | java
+  test_command: "npm test"
+
+vcs:
+  provider: "gitlab" # gitlab | github
+  host: "https://gitlab.com" # e.g., https://gitlab.com or https://github.com
+  remediation_branch_prefix: "ai-remediation/"
+  require_human_approval: true
+  auto_merge_on_approval: false
+
+security_rules:
+  severity_threshold: "MEDIUM" # CRITICAL | HIGH | MEDIUM | LOW
+  ruleset: "sonarqube-checkmarx-hybrid"
+
+reporting:
+  artifacts_dir: ".ai-code-secure/artifacts"
+  impact_reports_dir: "docs/impact-reports"
+  history_log: ".ai-code-secure/history.json"

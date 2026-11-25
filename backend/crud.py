@@ -38,6 +38,21 @@ def create_product(
     )
 
     db.add(product)
+    db.flush()
+
+    if quantity > 0:
+        db.add(
+            InventoryTransaction(
+                product_id=product.id,
+                transaction_type="STOCK_IN",
+                quantity=quantity,
+                previous_quantity=0,
+                new_quantity=quantity,
+                reference="INITIAL_STOCK",
+                notes="Opening stock recorded when product was created"
+            )
+        )
+
     db.commit()
     db.refresh(product)
 

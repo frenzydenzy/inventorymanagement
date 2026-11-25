@@ -1,0 +1,64 @@
+stages:
+  - ai_security_review
+  - ai_post_merge_docs
+
+variables:
+  ACS_ARTIFACTS_DIR: ".ai-code-secure/artifacts"
+  ACS_AGENT_RUNNER: "ai-agent-cli" # Replace with your enterprise AI agent runner command
+
+# Stage 1: Triggered on feature branch commits (skips base branch & ai-remediation/* branches)
+ai-code-secure:pre-merge:
+  stage: ai_security_review
+  image: node:20-bullseye
+  rules:
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_BRANCH !~ /^ai-remediation\//'
+      when: always
+    - when: never
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq python3 python3-yaml git curl
+    - git fetch origin "$CI_DEFAULT_BRANCH" --depth=50 || true
+    - mkdir -p "$ACS_ARTIFACTS_DIR"
+  script:
+    - echo "Running AI Code Secure Orchestrator (pre-merge phase) on $CI_COMMIT_BRANCH..."
+    - >
+      $ACS_AGENT_RUNNER
+      --agent ".ai-code-secure/agents/orchestrator.agent.md"
+      --phase "pre-merge"
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - .ai-code-secure/artifacts/context-report.json
+      - .ai-code-secure/artifacts/vulnerability-report.json
+      - .ai-code-secure/artifacts/remediation-report.json
+
+# Stage 2: Triggered after developer approves & merges the ai-remediation/* MR into their feature branch
+ai-code-secure:post-merge:
+  stage: ai_post_merge_docs
+  image: python:3.12-slim
+  rules:
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /Merge branch .ai-remediation\//'
+      when: always
+    - when: never
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git
+    - git config user.name "AI Code Secure Bot"
+    - git config user.email "ai-code-secure@internal.corp"
+  script:
+    - echo "Running AI Code Secure Orchestrator (post-merge phase) on $CI_COMMIT_BRANCH..."
+    - >
+      $ACS_AGENT_RUNNER
+      --agent ".ai-code-secure/agents/orchestrator.agent.md"
+      --phase "post-merge"
+    - |
+      if [ -n "$(git status --porcelain docs/impact-reports .ai-code-secure/history.json)" ]; then
+        git add docs/impact-reports .ai-code-secure/history.json
+        git commit -m "docs(security): add post-merge impact report [skip ci]"
+        git push "https://gitlab-ci-token:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${CI_COMMIT_BRANCH}"
+      fi
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - docs/impact-reports/
+      - .ai-code-secure/history.json
