@@ -13,3 +13,6 @@ __pycache__/
 
 # Python test/cache files
 .pytest_cache/
+
+# AI Code Secure runtime artifacts
+.ai-code-secure/artifacts/

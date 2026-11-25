@@ -1,0 +1,108 @@
+name: AI Code Secure
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+      - 'ai-remediation/**'
+  pull_request:
+    types: [closed]
+    branches-ignore:
+      - main
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  ACS_ARTIFACTS_DIR: .ai-code-secure/artifacts
+
+jobs:
+  # Stage 1: Triggered on feature branch commits
+  pre-merge:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install GitHub Copilot CLI
+        run: npm install --global @github/copilot
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install pyyaml
+
+      - name: Run AI Code Secure Orchestrator (pre-merge)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+        run: |
+          mkdir -p "$ACS_ARTIFACTS_DIR"
+          copilot \
+            --prompt "Run the AI Code Secure pre-merge pipeline for this checked-out feature branch. Follow @.ai-code-secure/agents/orchestrator.agent.md and @.ai-code-secure/skills/orchestrator/SKILL.md. Use the GitHub provider configured in ai-code-secure.yaml, obey the base-branch and human-approval guards, and write the required reports under .ai-code-secure/artifacts/. Do not merge any pull request." \
+            --allow-all-tools \
+            --no-ask-user
+
+      - name: Upload Review & Remediation Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acs-artifacts-${{ github.sha }}
+          path: .ai-code-secure/artifacts/
+          retention-days: 14
+
+  # Stage 2: Triggered ONLY after developer approves & merges the ai-remediation/* PR
+  post-merge:
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'ai-remediation/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install GitHub Copilot CLI
+        run: npm install --global @github/copilot
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install pyyaml
+
+      - name: Run AI Code Secure Orchestrator (post-merge)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+        run: |
+          copilot \
+            --prompt "Run the AI Code Secure post-merge pipeline for this checked-out branch. Follow @.ai-code-secure/agents/orchestrator.agent.md and @.ai-code-secure/skills/orchestrator/SKILL.md. Use the GitHub provider configured in ai-code-secure.yaml and write the required impact report and history under the configured reporting paths." \
+            --allow-all-tools \
+            --no-ask-user
+
+      - name: Commit Post-Merge Impact Report
+        run: |
+          if [ -n "$(git status --porcelain docs/impact-reports .ai-code-secure/history.json)" ]; then
+            git config user.name "AI Code Secure Bot"
+            git config user.email "ai-code-secure@users.noreply.github.com"
+            git add docs/impact-reports .ai-code-secure/history.json
+            git commit -m "docs(security): add post-merge impact report [skip ci]"
+            git push origin "HEAD:${{ github.event.pull_request.base.ref }}"
+          fi
