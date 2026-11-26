@@ -1,0 +1,55 @@
+{
+  "remediation_branch": "ai-remediation/feature/code-for-testing-33a2e80",
+  "feature_branch": "feature/code-for-testing",
+  "base_branch": "master",
+  "status": "AWAITING_APPROVAL",
+  "test_command": "python -m compileall -q backend",
+  "test_result": "PASSED",
+  "fixes": [
+    {
+      "rule_id": "CX-002",
+      "file_path": "tests/fixtures/security_and_logic_demo.js",
+      "line_number": 4,
+      "before_snippet": "const api_key = \"FAKE_DEMO_KEY_NOT_REAL\";",
+      "after_snippet": "const api_key = process.env.INVENTORY_API_KEY;"
+    },
+    {
+      "rule_id": "CX-001",
+      "file_path": "tests/fixtures/security_and_logic_demo.js",
+      "line_number": 7,
+      "before_snippet": "  return eval(untrustedExpression);",
+      "after_snippet": "  return JSON.parse(untrustedExpression);"
+    },
+    {
+      "rule_id": "CX-003",
+      "file_path": "tests/fixtures/security_and_logic_demo.js",
+      "line_number": 11,
+      "before_snippet": "  element.innerHTML = untrustedNote;",
+      "after_snippet": "  element.textContent = untrustedNote;"
+    },
+    {
+      "rule_id": "SQ-001",
+      "file_path": "tests/fixtures/security_and_logic_demo.js",
+      "line_number": 17,
+      "before_snippet": "  } catch (error) { }",
+      "after_snippet": "  } catch (error) {\n    console.error(\"loadInventory failed:\", error);\n    throw error;\n  }"
+    },
+    {
+      "rule_id": "SQ-002",
+      "file_path": "tests/fixtures/security_and_logic_demo.js",
+      "line_number": 21,
+      "before_snippet": "  return crypto.createHash(\"md5\").update(input).digest(\"hex\") + Math.random();",
+      "after_snippet": "  return crypto.createHash(\"sha256\").update(input).digest(\"hex\") + crypto.randomBytes(16).toString(\"hex\");"
+    }
+  ],
+  "not_fixed": [
+    {
+      "rule_id": "SQ-SEM-001",
+      "note": "Semantic quantity-validation/authorization issues need manual review."
+    }
+  ],
+  "merge_request": {
+    "iid": null,
+    "url": null
+  }
+}
